@@ -20,37 +20,52 @@ const LobbyScreen = () => {
   const handleJoinRoom = useCallback(
     (data) => {
       const { email, room } = data;
-      router.push(`/room/${room}`);
+      router.push(
+        {
+          pathname: `/room/${room}`,
+          query: { room }, // Room is in the URL
+        },
+        undefined,
+        { shallow: true, state: { email } }
+      ); // Email is in the state, not in the URL
     },
     [router]
   );
 
+  const HandleError = useCallback((data) => {
+    const { error } = data;
+    alert(error);
+  }, []);
+
   useEffect(() => {
     socket.on("room:join", handleJoinRoom);
+    socket.on("room:join:error", HandleError);
     return () => {
       socket.off("room:join", handleJoinRoom);
     };
-  }, [socket, handleJoinRoom]);
+  }, [socket, handleJoinRoom, HandleError]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-      <title>Let's-Connect</title>
-      <link
-        rel="shortcut icon"
-        href="../../public/favicon.ico"
-        type="image/x-icon"
-      />
-      <h1 className="text-5xl font-bold mb-6 mt-6 text-center tracking-tight">
-        Let's Connect
-      </h1>
-      <p className="text-2xl mt-2 mb-6 text-center max-w-md">
-        powered by <b>WebRTC!</b>
-      </p>
+    <div className="flex items-center md:flex-row   md: height:[auto]  flex-col  justify-evenly min-h-screen bg-gray-900 text-white">
+      <div className="text-center mb-6">
+        <title>Let's-Connect</title>
+        <link
+          rel="shortcut icon"
+          href="../../public/favicon.ico"
+          type="image/x-icon"
+        />
+        <h1 className="text-5xl font-bold mb-6 mt-6 text-center tracking-tight">
+          Let's Connect
+        </h1>
+        <p className="text-2xl mt-2 mb-6 text-center max-w-md">
+          powered by <b>WebRTC!</b>
+        </p>
+      </div>
 
-      <div className="bg-custom-gradient rounded-xl shadow-lg hover:shadow-[0px_0px_30px_1px_rgba(0,_255,_117,_0.3)] F transition-shadow ">
+      <div className="bg-custom-gradient height:[100vh]    rounded-xl w-[auto] shadow-lg hover:shadow-[0px_0px_30px_1px_rgba(0,_255,_117,_0.3)] F transition-shadow ">
         <div className="bg-gray-800 p-6 rounded-2xl   transition-transform duration-150 hover:scale-80 hover:rounded-[20px] ">
           <form onSubmit={handleSubmitForm}>
-            <p className="text-white text-center text-2xl mb-8">Join Room</p>
+            <p className="text-white text-center text-2xl font-bold p-1">Join Room</p>
 
             <div className="flex items-center gap-2 p-3 rounded-full bg-gray-700 shadow-inner mb-4">
               <svg
@@ -82,19 +97,17 @@ const LobbyScreen = () => {
                 <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"></path>
               </svg>
               <input
-                type="number"
+                type="text"
                 placeholder="Room Id"
                 className="bg-transparent border-none text-gray-400 w-full focus:outline-none focus:ring-0 focus:border-blue-500 hide-arrows"
                 value={room}
-                min="0"
-                max="99999"
                 autoComplete="off"
                 onChange={(e) => setRoom(e.target.value)}
                 required
               />
             </div>
 
-            <div className="flex justify-center gap-4 mb-6">
+            <div className="flex justify-center md:gap-0 gap-4 mb-6">
               <button
                 type="submit"
                 className="px-4 py-2 rounded-md bg-gray-700 text-white hover:bg-black transition-colors"
@@ -103,6 +116,15 @@ const LobbyScreen = () => {
               </button>
             </div>
           </form>
+          <div className="flex justify-center md:gap-0 gap-4 mb-6 flex-col items-center">
+            ----- OR -----
+            <button
+              onClick={() => router.push("/create")}
+              className="px-4 py-2 mt-4 bg-green-600 rounded"
+            >
+              Create Room
+            </button>
+          </div>
         </div>
       </div>
     </div>
