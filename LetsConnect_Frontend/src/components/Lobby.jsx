@@ -34,14 +34,14 @@ const LobbyScreen = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-      <title>Let's-Meet</title>
+      <title>Let's-Connect</title>
       <link
         rel="shortcut icon"
         href="../../public/favicon.ico"
         type="image/x-icon"
       />
       <h1 className="text-5xl font-bold mb-6 mt-6 text-center tracking-tight">
-        Let's Meet
+        Let's Connect
       </h1>
       <p className="text-2xl mt-2 mb-6 text-center max-w-md">
         powered by <b>WebRTC!</b>

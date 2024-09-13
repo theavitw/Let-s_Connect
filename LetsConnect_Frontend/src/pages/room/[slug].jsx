@@ -202,7 +202,7 @@ const RoomPage = () => {
             <title>Room No. {slug}</title>
             <h1 className='absolute top-0 left-0 text-5xl
             text-center font-josefin tracking-tighter mt-5 ml-5 mmd:text-xl mxs:text-sm'>Let's
-                Meet
+                Connect
             </h1>
             <h4 className='font-bold text-xl md:text-2xl 
                 mmd:text-sm mt-5 mb-4 msm:max-w-[100px] text-center'>
