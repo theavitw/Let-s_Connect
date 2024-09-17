@@ -120,13 +120,13 @@ const RoomPage = () => {
   useEffect(() => {
     socket.on("call:end", ({ from }) => {
       if (from === remoteSocketId) {
-        peer.peer.close();
+        // peer.peer.close();
         if (myStream) {
           myStream.getTracks().forEach((track) => track.stop());
           setMyStream(null);
         }
         setRemoteStream(null);
-        setRemoteSocketId(null);
+        // setRemoteSocketId(null);
       }
     });
     return () => {
@@ -186,7 +186,7 @@ const RoomPage = () => {
     setRemoteStream(null);
 
     if (remoteSocketId) {
-      socket.emit("call:end", { to: remoteSocketId });
+      socket.emit("call:end", { to: remoteSocketId , room : slug });
     }
     setRemoteSocketId(null);
     alert("Call Ended");

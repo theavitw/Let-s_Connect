@@ -23,7 +23,7 @@ const generateRoomId = () => {
   return Math.random().toString(36).substring(2, 7); // Generates random string of 5 chars
 };
 
-const rooms = new Set(); // Store created room IDs
+const rooms = new Set();
 const emailToSocket = new Map();
 const socketToEmail = new Map();
 
@@ -86,6 +86,7 @@ io.on("connection", (socket) => {
   socket.on("call:end", ({ to, room }) => {
     io.to(to).emit("call:end", { from: socket.id });
     const roomId = room?.room;
+    // console.log("room id", roomId);
     // Remove the user from maps
     const email = socketToEmail.get(socket.id);
     emailToSocket.delete(email);
@@ -95,8 +96,8 @@ io.on("connection", (socket) => {
     socket.leave(roomId);
 
     // Check if the room is now empty
-    const roomSize = io.sockets.adapter.rooms.get(roomId)?.size || 0;
-    console.log("room size", roomSize);
+    const roomSize = io.sockets.adapter.rooms.get(roomId)?.size || 0; 
+    // console.log("room size", roomSize);
     if (roomSize === 0) {
       rooms.delete(roomId);
     }
