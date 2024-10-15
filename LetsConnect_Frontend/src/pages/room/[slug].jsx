@@ -175,6 +175,10 @@ const RoomPage = () => {
     setIsVideoOnHold(!isVideoOnHold);
   };
 
+  const HandleCopy = () => {
+    navigator.clipboard.writeText(slug);
+  };
+
   const handleEndCall = useCallback(() => {
     peer.peer.close();
 
@@ -186,7 +190,7 @@ const RoomPage = () => {
     setRemoteStream(null);
 
     if (remoteSocketId) {
-      socket.emit("call:end", { to: remoteSocketId , room : slug });
+      socket.emit("call:end", { to: remoteSocketId, room: slug });
     }
     setRemoteSocketId(null);
     alert("Call Ended");
@@ -205,12 +209,19 @@ const RoomPage = () => {
       >
         Disconnect
       </button>
+
       <h1 className="absolute top-[20px] left-0 text-5xl text-center font-josefin tracking-tighter mt-5 ml-5 mmd:text-xl mxs:text-sm">
         Let's Connect
       </h1>
       <h4 className="font-bold text-xl md:text-2xl mmd:text-sm mt-5 mb-4 msm:max-w-[100px] text-center">
-        {remoteSocketId ? "Connected With Remote User!" : "No One In Room"}
+        {remoteStream &&remoteSocketId ? "Connected With Remote User!" : "No One In Room"}
       </h4>
+      <p className="">
+        Copy And Share Room ID:{" "}
+        <span className="font-bold cursor-pointer" onClick={HandleCopy}>
+          {slug}
+        </span>
+      </p>
 
       {remoteStream && remoteSocketId && isSendButtonVisible && (
         <button
@@ -238,11 +249,7 @@ const RoomPage = () => {
           />
         )}
         {remoteStream && (
-          <VideoPlayer
-            stream={remoteStream}
-            name={"Remote Stream"}
-            isAudioMute={isAudioMute}
-          />
+          <VideoPlayer stream={remoteStream} isAudioMute={isAudioMute} />
         )}
       </div>
       {myStream && remoteStream && !isSendButtonVisible && (
