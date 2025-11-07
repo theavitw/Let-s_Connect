@@ -85,23 +85,24 @@ io.on("connection", (socket) => {
 
   socket.on("call:end", ({ to, room }) => {
     io.to(to).emit("call:end", { from: socket.id });
-    const roomId = room?.room;
-    // console.log("room id", roomId);
+    // console.log("room id", room);
     // Remove the user from maps
     const email = socketToEmail.get(socket.id);
     emailToSocket.delete(email);
     socketToEmail.delete(socket.id);
 
     // Leave the room
-    socket.leave(roomId);
+    socket.leave(room);
 
     // Check if the room is now empty
-    const roomSize = io.sockets.adapter.rooms.get(roomId)?.size || 0; 
+    const roomSize = io.sockets.adapter.rooms.get(room)?.size || 0;
     // console.log("room size", roomSize);
-    if (roomSize === 0) {
-      rooms.delete(roomId);
-    }
-  });
+    // console.log("room size", roomSize);
+    if (roomSize === 1) {
+      // console.log("room deleted", room);
+      rooms.clear();
+    } 
+  }); 
 
   socket.on("call:initiated", ({ to }) => {
     io.to(to).emit("call:initiated", { from: socket.id });
