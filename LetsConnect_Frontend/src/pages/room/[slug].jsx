@@ -214,7 +214,9 @@ const RoomPage = () => {
         Let's Connect
       </h1>
       <h4 className="font-bold text-xl md:text-2xl mmd:text-sm mt-5 mb-4 msm:max-w-[100px] text-center">
-        {remoteStream &&remoteSocketId ? "Connected With Remote User!" : "No One In Room"}
+        {remoteStream && remoteSocketId
+          ? "Connected With Remote User!"
+          : "No One In Room"}
       </h4>
       <p className="">
         Copy And Share Room ID:{" "}

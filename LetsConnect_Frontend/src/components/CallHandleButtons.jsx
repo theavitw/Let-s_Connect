@@ -1,4 +1,3 @@
-// components/CallButtons.jsx
 import MicOffIcon from '@mui/icons-material/MicOff';
 import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice';
 import VideocamIcon from '@mui/icons-material/Videocam';

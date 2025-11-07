@@ -1,6 +1,8 @@
 class PeerService {
   constructor() {
-    if (typeof window !== "undefined" && !this.peer) {
+    if (typeof window !== "undefined" && !this.worker) {
+      this.worker = new Worker(new URL("./peer.worker.js", import.meta.url)); // Dynamically import the worker
+
       this.peer = new RTCPeerConnection({
         iceServers: [
           {
@@ -14,38 +16,56 @@ class PeerService {
     }
   }
 
+  addTrack = (track, stream) => {
+    this.peer.addTrack(track, stream);
+  };
+
+  getOffer = () => {
+    return new Promise((resolve) => {
+      this.peer.createOffer().then((offer) => {
+        this.peer.setLocalDescription(offer);
+        resolve(offer);
+      });
+    });
+  };
+
+  getAnswer = (offer) => {
+    return new Promise((resolve) => {
+      this.peer
+        .setRemoteDescription(new RTCSessionDescription(offer))
+        .then(() => {
+          this.peer.createAnswer().then((answer) => {
+            this.peer.setLocalDescription(answer);
+            resolve(answer);
+          });
+        });
+    });
+  };
+
   setLocalDescription = async (ans) => {
     if (this.peer) {
       await this.peer.setRemoteDescription(new RTCSessionDescription(ans));
     }
   };
 
-  getAnswer = async (offer) => {
-    if (this.peer) {
-      await this.peer.setRemoteDescription(offer);
-      const ans = await this.peer.createAnswer();
-      await this.peer.setLocalDescription(new RTCSessionDescription(ans));
-      return ans;
-    }
-  };
-
-  getOffer = async () => {
-    if (this.peer) {
-      const offer = await this.peer.createOffer();
-      await this.peer.setLocalDescription(new RTCSessionDescription(offer));
-      return offer;
-    }
-  };
-
   toggleAudio = () => {
-    const audioTracks = this.peer
+    const audioSender = this.peer
       .getSenders()
-      .find((sender) => sender.track.kind === "audio").track;
-    audioTracks.enabled = !audioTracks.enabled;
+      .find((sender) => sender.track.kind === "audio");
 
-    // Mute the local audio track
-    const localAudioTrack = this.peer.getLocalStreams()[0].getAudioTracks()[0];
-    localAudioTrack.enabled = !localAudioTrack.enabled;
+    if (audioSender) {
+      audioSender.track.enabled = !audioSender.track.enabled;
+    }
+
+    // Ensure the local audio track is not played back locally
+    const localStream = this.peer.getLocalStreams()[0];
+    if (localStream) {
+      const localAudioTrack = localStream.getAudioTracks()[0];
+      if (localAudioTrack) {
+        localAudioTrack.enabled = !localAudioTrack.enabled;
+        localAudioTrack.stop(); // Stop the local audio track to prevent playback
+      }
+    }
   };
 
   toggleVideo = () => {
@@ -56,4 +76,6 @@ class PeerService {
   };
 }
 
-export default new PeerService();
+const peerService = new PeerService();
+
+export default peerService;
