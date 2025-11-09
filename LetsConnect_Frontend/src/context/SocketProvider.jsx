@@ -10,7 +10,7 @@ export const useSocket = () => {
 
 const SocketProvider = (props) => {
   const socket = useMemo(
-    () => io("localhost:8080/", { transports: ["websocket"] }),
+    () => io("https://websocket-kto2.onrender.com/", { transports: ["websocket"] }),
     []
   );
   return (
